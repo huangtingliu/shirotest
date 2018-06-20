@@ -57,7 +57,20 @@ public class ShiroController {
     @RequestMapping("/userDel")
     public String userDel(User user){
         Subject subject = SecurityUtils.getSubject();
-        return "userManage,"+subject.getPrincipal();
+        return "userDel,"+subject.getPrincipal();
+    }
+
+    @ResponseBody
+    @RequestMapping("/orderManage")
+    public String orderManage(User user){
+        Subject subject = SecurityUtils.getSubject();
+        return "orderManage,"+subject.getPrincipal();
+    }
+    @ResponseBody
+    @RequestMapping("/orderDel")
+    public String orderDel(User user){
+        Subject subject = SecurityUtils.getSubject();
+        return "orderDel,"+subject.getPrincipal();
     }
 
 }
