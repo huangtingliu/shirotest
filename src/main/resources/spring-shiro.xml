@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+">
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"></property>
+        <property name="loginUrl" value="toLogin"></property><!--没有登录认证的用户默认跳转的登录界面，默认是根目录下的/login.jsp界面-->
+        <property name="unauthorizedUrl" value="403.jsp"></property><!--没有权限默认跳转的界面-->
+        <property name="filterChainDefinitions">
+            <value><!-- 优先级自上到下 --><!-- anon:表示可以匿名使用。 authc:表示需要认证(登录)才能使用，没有参数. -->
+                /toLogin anon
+                /login anon
+                /userManage roles["admin"]  <!--拥有角色才能访问（单个角色）-->
+                /orderManage roles["admin","orderAdmin"]  <!--拥有角色才能访问（多个角色）-->
+                /userDel perms["user:delete"] <!--权限控制（单个）-->
+                /userUpdate = perms["user:delete","user:update"] <!--权限控制（多个）-->
+                /* authc
+            </value>
+        </property>
+    </bean>
+
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="customRealm"></property>
+    </bean>
+
+    <bean id="customRealm" class="com.huangtl.realm.CustomRealm"></bean>
+
+    <!-- 保证 Shiro内部生命周期 -->
+    <bean class="org.apache.shiro.spring.LifecycleBeanPostProcessor"></bean>
+
+    <!-- 开启Shiro授权生效 -->
+    <bean id="authorizationAdvisor"
+          class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor"></bean>
+
+
+</beans>
