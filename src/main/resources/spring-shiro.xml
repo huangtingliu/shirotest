@@ -38,9 +38,15 @@
 
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <property name="realm" ref="customRealm"></property>
+        <!--缓存管理器可以配置在securityManager，也可以配置在自定义realm，配置在securityManager本质上也会赋给realm-->
+        <!--<property name="cacheManager" value=""></property>-->
     </bean>
 
-    <bean id="customRealm" class="com.huangtl.realm.CustomRealm"></bean>
+    <bean id="customRealm" class="com.huangtl.realm.CustomRealm">
+        <property name="cacheManager" ref="cacheManager"></property>
+    </bean>
+
+    <bean class="com.huangtl.cache.RedisCacheManager" id="cacheManager"></bean>
 
     <!-- 保证 Shiro内部生命周期 -->
     <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"></bean>

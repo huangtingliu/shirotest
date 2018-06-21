@@ -5,7 +5,8 @@ import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import javax.annotation.Resource;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -24,7 +25,7 @@ public class RedisUtil {
             jedis.set(key,value);
             return value;
         } finally {
-            jedisPool.close();
+            jedis.close();
         }
     }
     public void expire(byte[] key,int i){
@@ -64,6 +65,38 @@ public class RedisUtil {
             jedis.close();
         }
     }
+    public List<byte[]> values(String keyPrefix){
+        Jedis jedis = getJedis();
+        try {
+            Set<byte[]> keysSet = keys(keyPrefix);
+            byte[][] keys = keysSet.toArray(new byte[keysSet.size()][]);
+            List<byte[]> values = jedis.mget(keys);
+            return values;
+        }finally{
+            jedis.close();
+        }
+    }
 
+    public int getSizes(String keyPrefix){
+        Jedis jedis = getJedis();
+        try {
+            return jedis.keys((keyPrefix+"*").getBytes()).size();
+        }finally{
+            jedis.close();
+        }
+    }
+
+    public void clear(String keyPrefix){
+        Jedis jedis = getJedis();
+        try {
+            Set<byte[]> keys = jedis.keys((keyPrefix + "*").getBytes());
+            Iterator<byte[]> iterator = keys.iterator();
+            while (iterator.hasNext()){
+                jedis.del(iterator.next());
+            }
+        }finally{
+            jedis.close();
+        }
+    }
 
 }

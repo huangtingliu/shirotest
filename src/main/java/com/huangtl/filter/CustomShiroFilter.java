@@ -47,7 +47,7 @@ public class CustomShiroFilter extends AuthorizationFilter {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String requestPath = httpServletRequest.getServletPath()+(null==httpServletRequest.getPathInfo()?"":httpServletRequest.getPathInfo());
-        
+
         if(subject.isPermitted(requestPath)){
             return true;
         }
