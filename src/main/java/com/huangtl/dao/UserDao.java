@@ -1,6 +1,7 @@
 package com.huangtl.dao;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserDao {
 
@@ -8,5 +9,7 @@ public interface UserDao {
 
     List<String> getRolesByUserName(String userName);
 
-    List<String> getPermissionsByUserName(String userName);
+    List<String> getPermissionsUrlByUserName(String userName);
+
+    List<Map> getPermissionsByUserName(String userName);
 }

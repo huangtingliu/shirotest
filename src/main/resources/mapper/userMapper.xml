@@ -3,6 +3,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.huangtl.dao.UserDao">
 
+    <sql id="QRY_PERMISSIONS_FROM">
+        from permissions p
+        LEFT JOIN roles_permissions rp on p.permission_id=rp.permission_id
+        LEFT JOIN user_roles ur on rp.role_id = ur.role_id
+        LEFT JOIN users u on ur.user_id=u.user_id
+    </sql>
+
     <select id="getPasswordByUserName" resultType="java.lang.String">
         select password from users where user_name =#{userName}
     </select>
@@ -14,11 +21,15 @@
         where u.user_name = #{userName}
     </select>
 
-    <select id="getPermissionsByUserName" resultType="java.lang.String">
-        select p.permission_id from permissions p
-        LEFT JOIN roles_permissions rp on p.permission_id=rp.permission_id
-        LEFT JOIN user_roles ur on rp.role_id = ur.role_id
-        LEFT JOIN users u on ur.user_id=u.user_id
+    <select id="getPermissionsUrlByUserName" resultType="java.lang.String">
+        select p.permission_url
+        <include refid="QRY_PERMISSIONS_FROM"></include>
+        where u.user_name = #{userName} and p.permission_url is not null and p.permission_url !=''
+    </select>
+
+    <select id="getPermissionsByUserName" resultType="java.util.Map">
+        select p.permission_id,p.permission_name,p.permission_url
+        <include refid="QRY_PERMISSIONS_FROM"></include>
         where u.user_name = #{userName}
     </select>
 </mapper>

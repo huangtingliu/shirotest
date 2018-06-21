@@ -11,7 +11,8 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 自定义realm
@@ -33,32 +34,13 @@ public class CustomRealm extends AuthorizingRealm {
      */
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         String userName = (String) principalCollection.getPrimaryPrincipal();
-        Set<String> roles = getRolesByName(userName);
-        Set<String> permissions = getPermissionsByRoles(userName);
-        //authorizationInfo.addRoles(roles);
+        //Set<String> roles = getRolesByUserName(userName);
+        Set<String> permissions = getPermissionsByUserName(userName);
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        authorizationInfo.setRoles(roles);
-        //System.out.println(authorizationInfo.getRoles().contains("admin"));//竟然是false 你妹的
+        //authorizationInfo.setRoles(roles);
         authorizationInfo.setStringPermissions(permissions);
+
         return authorizationInfo;
-    }
-
-    private Set<String> getPermissionsByRoles(String userName) {
-        //if(null == PERMISSIONS.get(userName)){
-            Set<String> permissions = new HashSet<>(userDao.getPermissionsByUserName(userName));
-            //PERMISSIONS.put(userName,permissions);
-            return permissions;
-        //}
-        //return PERMISSIONS.get(userName);
-    }
-
-    private Set<String> getRolesByName(String userName) {
-        //if(null == ROLES.get(userName)) {
-            Set<String> roles = new HashSet<>(userDao.getRolesByUserName(userName));
-            //ROLES.put(userName,roles);
-            return roles;
-        //}
-        //return ROLES.get(userName);
     }
 
     /**
@@ -79,8 +61,33 @@ public class CustomRealm extends AuthorizingRealm {
         return authenticationInfo;
     }
 
+    /**
+     * 根据用户名获取密码
+     * @param userName
+     * @return
+     */
     private String getPasswordByUserName(String userName) {
         String password = userDao.getPasswordByUserName(userName);
         return password;
+    }
+
+    /**
+     * 根据用户名获取权限
+     * @param userName
+     * @return
+     */
+    private Set<String> getPermissionsByUserName(String userName) {
+        Set<String> permissions = new HashSet<>(userDao.getPermissionsUrlByUserName(userName));
+        return permissions;
+    }
+
+    /**
+     * 根据用户名获取角色
+     * @param userName
+     * @return
+     */
+    private Set<String> getRolesByUserName(String userName) {
+        Set<String> roles = new HashSet<>(userDao.getRolesByUserName(userName));
+        return roles;
     }
 }

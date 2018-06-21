@@ -3,6 +3,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     Subject subject = SecurityUtils.getSubject();
+    String path = request.getContextPath();
 %>
 <html>
 <head>
@@ -11,7 +12,7 @@
 <body>
 <h2>登录</h2>
 <section>
-    <form action="/login">
+    <form action="<%=path%>/login">
         <p><input type="text" name="userName" placeholder="输入用户名"></p>
         <p><input type="text" name="password" placeholder="输入密码"></p>
         <p><input type="submit" value="登录"></p>
@@ -20,7 +21,7 @@
 </section>
 <section>
     <h3>试着跳转权限控制页面</h3>
-    <a href="/userManage">userManage</a>
+    <a href="<%=path%>/userManage">userManage</a>
 </section>
 </body>
 </html>
