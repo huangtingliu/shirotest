@@ -11,19 +11,21 @@
 
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"></property>
-        <property name="loginUrl" value="toLogin"></property><!--没有登录认证的用户默认跳转的登录界面，默认是根目录下的/login.jsp界面-->
-        <property name="unauthorizedUrl" value="403.jsp"></property><!--没有权限默认跳转的界面-->
+        <property name="loginUrl" value="/user/toLogin"></property><!--没有登录认证的用户默认跳转的登录界面，默认是根目录下的/login.jsp界面-->
+        <property name="unauthorizedUrl" value="/403.jsp"></property><!--没有权限默认跳转的界面-->
         <property name="filterChainDefinitions">
             <value><!-- 优先级自上到下 --><!-- anon:表示可以匿名使用。 authc:表示需要认证(登录)才能使用，没有参数. -->
-                /toLogin anon
-                /login anon
+                /user/toRegister anon
+                /user/register anon
+                /user/toLogin anon
+                /user/login anon
                 /403.jsp anon
-                /logout anon
+                /user/logout anon
                 <!--/userManage roles["1","2"] &lt;!&ndash;同时拥有多个角色才可以&ndash;&gt;-->
                 <!--/orderManage customFilter["1","3"]  &lt;!&ndash;自定义filter,拥有其中一个角色就能访问&ndash;&gt;-->
                 <!--/userDel perms["1","2"]-->
                 <!--/orderDel = perms["1","3"] &lt;!&ndash;权限控制（多个）&ndash;&gt;-->
-                /* authc,customFilter
+                /** authc,customFilter
             </value>
         </property>
         <property name="filters">
@@ -43,9 +45,19 @@
     </bean>
 
     <bean id="customRealm" class="com.huangtl.realm.CustomRealm">
+        <property name="credentialsMatcher" ref="credentialsMatcher"></property>
         <property name="cacheManager" ref="cacheManager"></property>
     </bean>
 
+    <!--认证匹配器，将请求的密码进行加密-->
+    <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher" id="credentialsMatcher">
+        <!--使用的加密算法-->
+        <property name="hashAlgorithmName" value="md5"></property>
+        <!--反复加密次数-->
+        <property name="hashIterations" value="1"></property>
+    </bean>
+
+    <!--角色权限缓存-->
     <bean class="com.huangtl.cache.RedisCacheManager" id="cacheManager"></bean>
 
     <!-- 保证 Shiro内部生命周期 -->

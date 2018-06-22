@@ -3,6 +3,30 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.huangtl.dao.UserDao">
 
+    <resultMap id="userResultMap" type="com.huangtl.entity.User">
+        <id property="userId" column="user_id"></id>
+        <result property="userAccount" column="user_account"></result>
+        <result property="userName" column="user_name"></result>
+        <result property="password" column="password"></result>
+    </resultMap>
+
+    <parameterMap id="user" type="com.huangtl.entity.User">
+        <parameter property="userId"></parameter>
+        <parameter property="userAccount"></parameter>
+        <parameter property="userName"></parameter>
+        <parameter property="password"></parameter>
+    </parameterMap>
+
+    <!--========================用户管理模块=========================-->
+    <insert id="registerUser" parameterMap="user" useGeneratedKeys="true" keyProperty="userId">
+        insert into users(user_account,user_name,password) values(#{userAccount},#{userName},#{password})
+    </insert>
+
+    <select id="getUsers" resultMap="userResultMap" useCache="true">
+      select * from users
+    </select>
+
+    <!--========================角色权限模块=========================-->
     <sql id="QRY_PERMISSIONS_FROM">
         from permissions p
         LEFT JOIN roles_permissions rp on p.permission_id=rp.permission_id
@@ -10,26 +34,27 @@
         LEFT JOIN users u on ur.user_id=u.user_id
     </sql>
 
-    <select id="getPasswordByUserName" resultType="java.lang.String">
-        select password from users where user_name =#{userName}
+    <select id="getPasswordByUserAccount" resultType="java.lang.String">
+        select password from users where user_account =#{userAccount}
     </select>
 
-    <select id="getRolesByUserName" resultType="java.lang.String">
+    <select id="getRolesByUserAccount" resultType="java.lang.String">
         select r.role_id from roles r
         LEFT JOIN user_roles ur on r.role_id = ur.role_id
         LEFT JOIN users u on ur.user_id = u.user_id
-        where u.user_name = #{userName}
+        where u.user_account = #{userAccount}
     </select>
 
-    <select id="getPermissionsUrlByUserName" resultType="java.lang.String">
+    <select id="getPermissionsUrlByUserAccount" resultType="java.lang.String">
         select p.permission_url
         <include refid="QRY_PERMISSIONS_FROM"></include>
-        where u.user_name = #{userName} and p.permission_url is not null and p.permission_url !=''
+        where u.user_account = #{userAccount} and p.permission_url is not null and p.permission_url !=''
     </select>
 
-    <select id="getPermissionsByUserName" resultType="java.util.Map">
+    <select id="getPermissionsByUserAccount" resultType="java.util.Map">
         select p.permission_id,p.permission_name,p.permission_url
         <include refid="QRY_PERMISSIONS_FROM"></include>
-        where u.user_name = #{userName}
+        where u.user_account = #{userAccount}
     </select>
+
 </mapper>

@@ -1,15 +1,21 @@
 package com.huangtl.dao;
 
+import com.huangtl.entity.User;
+
 import java.util.List;
 import java.util.Map;
 
 public interface UserDao {
 
-    String getPasswordByUserName(String userName);
+    String getPasswordByUserAccount(String userAccount);
 
-    List<String> getRolesByUserName(String userName);
+    List<String> getRolesByUserAccount(String userAccount);
 
-    List<String> getPermissionsUrlByUserName(String userName);
+    List<String> getPermissionsUrlByUserAccount(String userAccount);
 
-    List<Map> getPermissionsByUserName(String userName);
+    //List<Map> getPermissionsByUserAccount(String userAccount);
+
+    List<User> getUsers(Map param);
+
+    void registerUser(User user);
 }

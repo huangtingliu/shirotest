@@ -9,7 +9,9 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,9 +35,9 @@ public class CustomRealm extends AuthorizingRealm {
      * @return
      */
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        String userName = (String) principalCollection.getPrimaryPrincipal();
-        //Set<String> roles = getRolesByUserName(userName);
-        Set<String> permissions = getPermissionsByUserName(userName);
+        String userAccount = (String) principalCollection.getPrimaryPrincipal();
+        //Set<String> roles = getRolesByUserAccount(userAccount);
+        Set<String> permissions = getPermissionsByUserAccount(userAccount);
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         //authorizationInfo.setRoles(roles);
         authorizationInfo.setStringPermissions(permissions);
@@ -50,44 +52,56 @@ public class CustomRealm extends AuthorizingRealm {
      * @throws AuthenticationException
      */
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-        String userName = (String) authenticationToken.getPrincipal();
-        String password = getPasswordByUserName(userName);
+        String userAccount = (String) authenticationToken.getPrincipal();
+        if (StringUtils.isEmpty(userAccount)) {
+            return null;
+        }
+
+        String password = getPasswordByUserAccount(userAccount);
         if(null == password){
             return  null;
         }
 
-        AuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(userName,password,REALM_NAME);
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(userAccount,password,REALM_NAME);
+        authenticationInfo.setCredentialsSalt(ByteSource.Util.bytes(userAccount));
 
         return authenticationInfo;
     }
 
+    @Override
+    public void onLogout(PrincipalCollection principals) {
+        super.onLogout(principals);
+
+        System.out.println("退出："+principals.getPrimaryPrincipal());
+    }
+
     /**
      * 根据用户名获取密码
-     * @param userName
+     * @param userAccount
      * @return
      */
-    private String getPasswordByUserName(String userName) {
-        String password = userDao.getPasswordByUserName(userName);
+    private String getPasswordByUserAccount(String userAccount) {
+        String password = userDao.getPasswordByUserAccount(userAccount);
         return password;
     }
 
     /**
      * 根据用户名获取权限
-     * @param userName
+     * @param userAccount
      * @return
      */
-    private Set<String> getPermissionsByUserName(String userName) {
-        Set<String> permissions = new HashSet<>(userDao.getPermissionsUrlByUserName(userName));
+    private Set<String> getPermissionsByUserAccount(String userAccount) {
+        Set<String> permissions = new HashSet<>(userDao.getPermissionsUrlByUserAccount(userAccount));
         return permissions;
     }
 
     /**
      * 根据用户名获取角色
-     * @param userName
+     * @param userAccount
      * @return
      */
-    private Set<String> getRolesByUserName(String userName) {
-        Set<String> roles = new HashSet<>(userDao.getRolesByUserName(userName));
+    private Set<String> getRolesByUserAccount(String userAccount) {
+        Set<String> roles = new HashSet<>(userDao.getRolesByUserAccount(userAccount));
         return roles;
     }
 }

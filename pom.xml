@@ -13,6 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>4.2.3.RELEASE</spring.version>
+        <jackson.version>2.5.4</jackson.version>
     </properties>
 
     <build>
@@ -99,7 +100,20 @@
             <artifactId>mybatis</artifactId>
             <version>3.4.0</version>
         </dependency>
-
+        <!--
+            添加json依赖，spring默认没有将对象转换成json的转换器，不加的话涉及到对象的转换的地方都可能报错
+            例如：mybaitis返回自定义的resultMap时
+        -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <dependency>

@@ -15,6 +15,5 @@
         <constructor-arg name="port" value="6379"></constructor-arg>
     </bean>
 
-    <bean class="redis.clients.jedis.JedisPoolConfig" id="jedisPoolConfig">
-    </bean>
+    <bean class="redis.clients.jedis.JedisPoolConfig" id="jedisPoolConfig"></bean>
 </beans>
